@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geek Terminal</title>
+<link rel="stylesheet" href="newtab.css">
+</head>
+<body>
+<canvas id="matrixBg"></canvas>
+<div class="scanlines"></div>
+
+<div class="term">
+  <div class="topbar">
+    <span class="tb-dot tb-r"></span>
+    <span class="tb-dot tb-y"></span>
+    <span class="tb-dot tb-g"></span>
+    <span class="tb-title">root@geek:~</span>
+    <span class="tb-weather" id="weatherInfo" title="weather">--</span>
+    <span class="tb-info" id="sysInfo">system ready</span>
+  </div>
+
+  <div class="body">
+    <section class="hero">
+      <div class="prompt">$</div>
+      <span class="greeting" id="greeting"></span><span class="cursor">█</span>
+      <div class="clock" id="clock">
+        <div class="time" id="timeDisplay">00:00:00</div>
+        <div class="date" id="dateDisplay">----/--/--</div>
+      </div>
+    </section>
+
+    <section class="search-zone">
+      <form id="searchForm" class="s-form">
+        <button type="button" class="s-engine" id="engineBtn" title="切换搜索引擎">
+          <span class="s-eng-icon" id="engineIcon">D</span>
+          <svg class="s-eng-arrow" width="8" height="5" viewBox="0 0 8 5"><path d="M1 1l3 3 3-3" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>
+        </button>
+        <input type="text" id="searchInput" class="s-input" placeholder="search the web..." autocomplete="off" spellcheck="false"/>
+        <button type="submit" class="s-enter" id="enterBtn">EXECUTE</button>
+      </form>
+      <div class="s-dropdown" id="engineDropdown"></div>
+      <div class="s-suggest" id="suggestList"></div>
+    </section>
+
+    <nav class="links" id="quickLinks"></nav>
+
+    <footer class="status-bar">
+      <span class="sb-item"><b>UPTIME:</b> <span id="uptime">0d 0h 0m</span></span>
+      <span class="sb-sep">|</span>
+      <span class="sb-item"><b>SESSION:</b> active</span>
+      <span class="sb-sep">|</span>
+      <span class="sb-item"><b>MODE:</b> <span class="mode-val">HACKER</span></span>
+      <span class="sb-quote" id="quoteText">loading...</span>
+    </footer>
+  </div>
+</div>
+
+<script src="newtab.js"></script>
+</body>
+</html>
