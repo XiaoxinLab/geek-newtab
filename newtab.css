@@ -74,11 +74,34 @@ html,body{
   border-radius:4px;border:1px solid rgba(0,212,255,.15);
   cursor:pointer;margin-left:auto;margin-right:8px;
   transition:all .2s;user-select:none;
+  display:inline-flex;align-items:center;
 }
+/* 关闭天气的 × ：平时隐藏，鼠标移到天气区域时才浮现，跟快捷链接的删除按钮同一套交互 */
+.tb-weather-x{
+  width:12px;height:12px;padding:0;margin-left:4px;
+  border:none;background:none;color:var(--cyan);
+  font-family:inherit;font-size:13px;line-height:12px;
+  cursor:pointer;opacity:0;flex-shrink:0;
+  transition:opacity .2s;
+}
+.tb-weather:hover .tb-weather-x{opacity:.7;}
+.tb-weather-x:hover{opacity:1;color:#fff;}
+.tb-weather-x:focus-visible{outline:1px solid var(--cyan);outline-offset:1px;opacity:1;}
 .tb-weather:hover{
   background:rgba(0,212,255,.12);
   border-color:rgba(0,212,255,.3);
   color:#4de8ff;
+}
+/* 天气被手动关闭时的置灰状态，点一下会重新开启 */
+.tb-weather.off{
+  color:var(--fg-dim);background:transparent;
+  border-color:rgba(107,107,123,.25);
+}
+/* 已关闭时不再显示 ×，因为此时整个区域点击 = 重新开启 */
+.tb-weather.off .tb-weather-x{display:none;}
+.tb-weather.off:hover{
+  color:var(--cyan);background:rgba(0,212,255,.08);
+  border-color:rgba(0,212,255,.25);
 }
 
 .body{
@@ -328,6 +351,22 @@ html,body{
 }
 .lnk-add svg{width:20px;height:20px;opacity:.7;}
 
+/* 恢复被删内置链接的入口，用琥珀色和 ADD LINK 区分开 */
+.lnk-reset{
+  display:flex;align-items:center;justify-content:center;
+  gap:0;padding:12px 14px;background:transparent;
+  border:2px dashed rgba(255,176,0,.25);border-radius:8px;
+  cursor:pointer;transition:all .25s;color:var(--amber);
+  font-family:inherit;font-size:13px;font-weight:500;
+  position:relative;overflow:hidden;
+}
+.lnk-reset:hover{
+  border-color:var(--amber);background:rgba(255,176,0,.04);
+  color:#ffc940;transform:translateY(-1px);
+  box-shadow:var(--glow-amber);
+}
+.lnk-reset svg{width:20px;height:20px;opacity:.7;}
+
 .status-bar{
   display:flex;align-items:center;gap:8px;
   padding:10px 16px;margin-top:auto;
@@ -337,15 +376,34 @@ html,body{
 }
 .sb-item b{color:var(--fg-dim);margin-right:4px;}
 .sb-sep{color:var(--border);font-weight:300;}
+/* MODE 值是个按钮，负责开 / 关矩阵雨，所以要重置浏览器默认按钮外观 */
 .mode-val{
   color:var(--green);animation:pulse 2s ease-in-out infinite;
+  background:none;border:none;padding:0;margin:0;
+  font-family:inherit;font-size:inherit;line-height:1.4;
+  cursor:pointer;border-radius:3px;
+  transition:color .2s,background .2s;
 }
+.mode-val:hover{
+  color:#7dff9e;background:rgba(0,255,65,.12);
+  animation:none;opacity:1;
+}
+.mode-val:focus-visible{outline:1px solid var(--green);outline-offset:2px;}
+.mode-val.off{color:var(--fg-dim);animation:none;}
+.mode-val.off:hover{color:var(--cyan);background:rgba(0,212,255,.1);}
+/* 名言可读性：原来 color 用暗灰(#6b6b7b)之外又叠了一层 opacity:.6，
+   两层一起把亮度砍到只剩三成左右，中文在黑底上几乎读不出来。
+   这里去掉 opacity、提亮字色并把字号提到 12px。
+   max-width 也从 280px 放宽到 440px：中文句子偏长，280px 只能放下约 22 个字，
+   后面会被省略号截掉（实测 30 字需 367px）；状态栏总宽约 800px、左侧三项占约 300px，
+   440px 是安全上限，窄屏时 flex 会自动压缩回省略显示。 */
 .sb-quote{
   margin-left:auto;font-style:italic;
-  font-size:11px;color:var(--fg-dim);
-  opacity:.6;white-space:nowrap;
+  font-size:12px;color:#9a9aad;
+  white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis;
-  max-width:280px;letter-spacing:.01em;
+  max-width:440px;letter-spacing:.02em;
+  opacity:1;
 }
 
 .lnk-icon.g{background:rgba(0,255,65,.1);color:var(--green);}
@@ -353,13 +411,14 @@ html,body{
 .lnk-icon.a{background:rgba(255,176,0,.1);color:var(--amber);}
 .lnk-icon.m{background:rgba(255,0,110,.1);color:var(--magenta);}
 
-.add-modal-overlay{
+/* ADD LINK 与 SET CITY 两个弹窗共用同一套遮罩样式 */
+.add-modal-overlay,.city-modal-overlay{
   display:none;position:fixed;top:0;left:0;
   width:100%;height:100%;z-index:999;
   background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
   justify-content:center;align-items:center;
 }
-.add-modal-overlay.show{display:flex;}
+.add-modal-overlay.show,.city-modal-overlay.show{display:flex;}
 .add-modal{
   width:400px;max-width:90vw;
   background:var(--bg2);border:1px solid var(--border);
@@ -372,7 +431,17 @@ html,body{
   font-size:16px;font-weight:700;color:var(--green);
   margin-bottom:18px;display:flex;align-items:center;gap:8px;
 }
+/* SET CITY 弹窗里的说明文字 */
+.am-hint{
+  font-size:11px;color:var(--fg-dim);
+  line-height:1.7;margin-bottom:16px;
+}
 .am-field{margin-bottom:14px;}
+/* 城市查询失败时的错误提示，min-height 保证没报错时也不会塌掉布局 */
+.am-err{
+  font-size:11px;color:#ff6b81;
+  line-height:1.5;min-height:15px;
+}
 .am-label{
   font-size:11px;color:var(--fg-dim);text-transform:uppercase;
   letter-spacing:.08em;margin-bottom:6px;display:block;
@@ -388,6 +457,9 @@ html,body{
 .am-actions{
   display:flex;gap:10px;margin-top:20px;
 }
+/* SET CITY 弹窗底部离报错文字近一些，不必留 ADD LINK 那么大的空隙 */
+.city-modal-overlay .am-actions{margin-top:12px;}
+.am-btn:disabled{opacity:.55;cursor:wait;}
 .am-btn{
   flex:1;padding:10px;border-radius:6px;
   border:none;font-family:inherit;font-size:13px;

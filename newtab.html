@@ -16,7 +16,11 @@
     <span class="tb-dot tb-y"></span>
     <span class="tb-dot tb-g"></span>
     <span class="tb-title">root@geek:~</span>
-    <span class="tb-weather" id="weatherInfo" title="weather">--</span>
+    <span class="tb-weather" id="weatherInfo" title="点击获取定位并显示天气">
+      <span class="tb-weather-text" id="weatherText">--</span>
+      <button type="button" class="tb-weather-x" id="weatherCity" title="手动设置城市" aria-label="手动设置城市">&#9998;</button>
+      <button type="button" class="tb-weather-x" id="weatherOff" title="关闭天气显示" aria-label="关闭天气显示">&times;</button>
+    </span>
     <span class="tb-info" id="sysInfo">system ready</span>
   </div>
 
@@ -50,7 +54,7 @@
       <span class="sb-sep">|</span>
       <span class="sb-item"><b>SESSION:</b> active</span>
       <span class="sb-sep">|</span>
-      <span class="sb-item"><b>MODE:</b> <span class="mode-val">HACKER</span></span>
+      <span class="sb-item"><b>MODE:</b> <button type="button" class="mode-val" id="modeToggle" title="点击开 / 关矩阵雨背景">HACKER</button></span>
       <span class="sb-quote" id="quoteText">loading...</span>
     </footer>
   </div>
