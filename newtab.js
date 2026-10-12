@@ -1237,6 +1237,93 @@
     }
   }
 
+  /**
+   * 更新便签标题栏的字数统计。
+   * @param {HTMLElement} area - 便签输入框
+   * @param {HTMLElement} countEl - 显示字数的元素
+   * @returns {void}
+   */
+  function updateNoteCount(area, countEl) {
+    if (!area || !countEl) return;
+    var n = area.value.length;
+    countEl.textContent = n + ' 字';
+  }
+
+  /**
+   * 初始化一块便签：读回上次写的内容、绑定输入自动保存、初始化字数统计。
+   * 内容直接存 localStorage，关掉浏览器也不会丢。
+   * @param {string} areaId - textarea 的元素 id
+   * @param {string} countId - 字数统计的元素 id
+   * @param {string} storageKey - localStorage 键名
+   * @returns {void}
+   */
+  function initNote(areaId, countId, storageKey) {
+    var area = $(areaId);
+    if (!area) return;
+    var countEl = $(countId);
+
+    try { area.value = localStorage.getItem(storageKey) || ''; } catch (e) {}
+    updateNoteCount(area, countEl);
+
+    var timer = null;
+
+    // 打字时防抖保存，避免每敲一个字都写一次 localStorage
+    area.addEventListener('input', function () {
+      updateNoteCount(area, countEl);
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        try { localStorage.setItem(storageKey, area.value); } catch (e) {}
+      }, 400);
+    });
+
+    // 失焦或关闭页面时立刻落盘，防止防抖窗口内的输入丢失
+    function flush() {
+      clearTimeout(timer);
+      try { localStorage.setItem(storageKey, area.value); } catch (e) {}
+    }
+    area.addEventListener('blur', flush);
+    window.addEventListener('beforeunload', flush);
+  }
+
+  /**
+   * 绑定一块便签的折叠 / 展开，并记住折叠状态。
+   * 折叠后便签只剩标题栏那一条，高度由内容决定；展开时恢复与终端窗口等高。
+   * @param {string} sideId - 便签所在 aside 的元素 id
+   * @param {string} btnId - 折叠按钮的元素 id
+   * @param {string} storageKey - localStorage 键名，存 '1'（折叠）或 '0'（展开）
+   * @returns {void}
+   */
+  function initNoteToggle(sideId, btnId, storageKey) {
+    var side = $(sideId);
+    var btn = $(btnId);
+    if (!side || !btn) return;
+
+    var note = side.querySelector('.note');
+    if (!note) return;
+
+    var collapsed = false;
+    try { collapsed = localStorage.getItem(storageKey) === '1'; } catch (e) {}
+    note.classList.toggle('collapsed', collapsed);
+    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      collapsed = !collapsed;
+      note.classList.toggle('collapsed', collapsed);
+      btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      btn.title = collapsed ? '展开便签' : '折叠便签';
+      try { localStorage.setItem(storageKey, collapsed ? '1' : '0'); } catch (e) {}
+
+      // 折叠时正在输入的便签要先落盘，否则展开回来会丢字
+      var area = note.querySelector('.note-body');
+      if (collapsed && area) {
+        area.dispatchEvent(new Event('blur'));
+      }
+    });
+  }
+
   function initUptime() {
     var el = $('uptime');
     if (!el) return;
@@ -1280,6 +1367,11 @@
 
   loadCustomLinks();
   loadHiddenLinks();
+
+  initNote('noteLeft', 'noteCountLeft', 'geek_note_left');
+  initNote('noteRight', 'noteCountRight', 'geek_note_right');
+  initNoteToggle('sideLeft', 'noteToggleLeft', 'geek_note_left_collapsed');
+  initNoteToggle('sideRight', 'noteToggleRight', 'geek_note_right_collapsed');
 
   initMatrix();
   initClock();

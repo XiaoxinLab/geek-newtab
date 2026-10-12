@@ -10,54 +10,86 @@
 <canvas id="matrixBg"></canvas>
 <div class="scanlines"></div>
 
-<div class="term">
-  <div class="topbar">
-    <span class="tb-dot tb-r"></span>
-    <span class="tb-dot tb-y"></span>
-    <span class="tb-dot tb-g"></span>
-    <span class="tb-title">root@geek:~</span>
-    <span class="tb-weather" id="weatherInfo" title="点击获取定位并显示天气">
-      <span class="tb-weather-text" id="weatherText">--</span>
-      <button type="button" class="tb-weather-x" id="weatherCity" title="手动设置城市" aria-label="手动设置城市">&#9998;</button>
-      <button type="button" class="tb-weather-x" id="weatherOff" title="关闭天气显示" aria-label="关闭天气显示">&times;</button>
-    </span>
-    <span class="tb-info" id="sysInfo">system ready</span>
-  </div>
-
-  <div class="body">
-    <section class="hero">
-      <div class="prompt">$</div>
-      <span class="greeting" id="greeting"></span><span class="cursor">█</span>
-      <div class="clock" id="clock">
-        <div class="time" id="timeDisplay">00:00:00</div>
-        <div class="date" id="dateDisplay">----/--/--</div>
-      </div>
-    </section>
-
-    <section class="search-zone">
-      <form id="searchForm" class="s-form">
-        <button type="button" class="s-engine" id="engineBtn" title="切换搜索引擎">
-          <span class="s-eng-icon" id="engineIcon">D</span>
-          <svg class="s-eng-arrow" width="8" height="5" viewBox="0 0 8 5"><path d="M1 1l3 3 3-3" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>
+<div class="stage">
+  <!-- 左侧便签：屏幕宽度不足 1610px 时整块隐藏 -->
+  <aside class="side side-left" id="sideLeft">
+    <section class="note">
+      <header class="note-head">
+        <button type="button" class="note-toggle" id="noteToggleLeft" title="折叠 / 展开" aria-label="折叠或展开左侧便签">
+          <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 7.5L1 3h8z"/></svg>
         </button>
-        <input type="text" id="searchInput" class="s-input" placeholder="search the web..." autocomplete="off" spellcheck="false"/>
-        <button type="submit" class="s-enter" id="enterBtn">EXECUTE</button>
-      </form>
-      <div class="s-dropdown" id="engineDropdown"></div>
-      <div class="s-suggest" id="suggestList"></div>
+        <span class="note-dot"></span>
+        <span class="note-label">NOTE_01</span>
+        <span class="note-count" id="noteCountLeft">0 字</span>
+      </header>
+      <textarea class="note-body" id="noteLeft" spellcheck="false" placeholder="记点什么…"></textarea>
     </section>
+  </aside>
 
-    <nav class="links" id="quickLinks"></nav>
+  <div class="term">
+    <div class="topbar">
+      <span class="tb-dot tb-r"></span>
+      <span class="tb-dot tb-y"></span>
+      <span class="tb-dot tb-g"></span>
+      <span class="tb-title">root@geek:~</span>
+      <span class="tb-weather" id="weatherInfo" title="点击获取定位并显示天气">
+        <span class="tb-weather-text" id="weatherText">--</span>
+        <button type="button" class="tb-weather-x" id="weatherCity" title="手动设置城市" aria-label="手动设置城市">&#9998;</button>
+        <button type="button" class="tb-weather-x" id="weatherOff" title="关闭天气显示" aria-label="关闭天气显示">&times;</button>
+      </span>
+      <span class="tb-info" id="sysInfo">system ready</span>
+    </div>
 
-    <footer class="status-bar">
-      <span class="sb-item"><b>UPTIME:</b> <span id="uptime">0d 0h 0m</span></span>
-      <span class="sb-sep">|</span>
-      <span class="sb-item"><b>SESSION:</b> active</span>
-      <span class="sb-sep">|</span>
-      <span class="sb-item"><b>MODE:</b> <button type="button" class="mode-val" id="modeToggle" title="点击开 / 关矩阵雨背景">HACKER</button></span>
-      <span class="sb-quote" id="quoteText">loading...</span>
-    </footer>
+    <div class="body">
+      <section class="hero">
+        <div class="prompt">$</div>
+        <span class="greeting" id="greeting"></span><span class="cursor">█</span>
+        <div class="clock" id="clock">
+          <div class="time" id="timeDisplay">00:00:00</div>
+          <div class="date" id="dateDisplay">----/--/--</div>
+        </div>
+      </section>
+
+      <section class="search-zone">
+        <form id="searchForm" class="s-form">
+          <button type="button" class="s-engine" id="engineBtn" title="切换搜索引擎">
+            <span class="s-eng-icon" id="engineIcon">D</span>
+            <svg class="s-eng-arrow" width="8" height="5" viewBox="0 0 8 5"><path d="M1 1l3 3 3-3" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>
+          </button>
+          <input type="text" id="searchInput" class="s-input" placeholder="search the web..." autocomplete="off" spellcheck="false"/>
+          <button type="submit" class="s-enter" id="enterBtn">EXECUTE</button>
+        </form>
+        <div class="s-dropdown" id="engineDropdown"></div>
+        <div class="s-suggest" id="suggestList"></div>
+      </section>
+
+      <nav class="links" id="quickLinks"></nav>
+
+      <footer class="status-bar">
+        <span class="sb-item"><b>UPTIME:</b> <span id="uptime">0d 0h 0m</span></span>
+        <span class="sb-sep">|</span>
+        <span class="sb-item"><b>SESSION:</b> active</span>
+        <span class="sb-sep">|</span>
+        <span class="sb-item"><b>MODE:</b> <button type="button" class="mode-val" id="modeToggle" title="点击开 / 关矩阵雨背景">HACKER</button></span>
+        <span class="sb-quote" id="quoteText">loading...</span>
+      </footer>
+    </div>
   </div>
+
+  <!-- 右侧便签：与左侧对称 -->
+  <aside class="side side-right" id="sideRight">
+    <section class="note">
+      <header class="note-head">
+        <button type="button" class="note-toggle" id="noteToggleRight" title="折叠 / 展开" aria-label="折叠或展开右侧便签">
+          <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 7.5L1 3h8z"/></svg>
+        </button>
+        <span class="note-dot"></span>
+        <span class="note-label">NOTE_02</span>
+        <span class="note-count" id="noteCountRight">0 字</span>
+      </header>
+      <textarea class="note-body" id="noteRight" spellcheck="false" placeholder="记点什么…"></textarea>
+    </section>
+  </aside>
 </div>
 
 <script src="newtab.js"></script>

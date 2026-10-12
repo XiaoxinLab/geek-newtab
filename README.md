@@ -21,6 +21,7 @@
 - **Multi-engine Search** — 支持切换 Google / Bing / DuckDuckGo / Baidu
 - **Search Suggestions** — 实时搜索联想（DuckDuckGo 引擎专享）
 - **Quick Links** — 自定义快捷网站（localStorage 持久化），可一键恢复被删的内置链接
+- **Side Notes** — 左右两侧便签，与终端窗口等高，随打随存、可折叠（状态记住），窗口过窄时自动隐藏
 - **Inspirational Quotes** — 随机极客励志短句
 - **Scanline Effect** — CRT 扫描线视觉增强
 - **Uptime Counter** — 会话运行时间统计
@@ -73,15 +74,16 @@
 | **Turn Off Weather** | Hover the weather area, then click the `×` that appears on its right |
 | **Turn On Weather** | Once turned off the label greys out to `weather off` — clicking it turns weather back on |
 | **Toggle Matrix** | Click `MODE: HACKER` in the status bar; it flips to `OFF` and the rain stops |
+| **Side Notes** | Type in the `NOTE_01` / `NOTE_02` panels on either side — text saves automatically and survives restarts. Click the small triangle at the left of a panel header to fold it down to just the header bar; the folded state is remembered. The panels are hidden when the window is narrower than 1610px, but whatever you wrote is kept |
 
 ## Project Structure
 
 ```
 geek-newtab/
 ├── manifest.json      # Manifest V3 - overrides new tab page
-├── newtab.html        # Main page structure
+├── newtab.html        # Page structure: two note panels + the terminal window
 ├── newtab.css         # Terminal / cyberpunk styles
-├── newtab.js          # All logic: clock, weather, search, links
+├── newtab.js          # All logic: clock, weather, search, links, notes
 ├── icons/             # Extension icons (16/48/128px)
 └── README.md          # This file
 ```
@@ -111,7 +113,11 @@ All settings are stored in browser `localStorage` under these keys:
 | `geek_newtab_engine` | Number as string `"0"`–`"3"` | Selected engine index: `0` DuckDuckGo, `1` Google, `2` Bing, `3` Baidu |
 | `geek_newtab_matrix` | `"1"` or `"0"` | Matrix rain on / off |
 | `geek_newtab_weather` | `"1"` or `"0"` | Weather widget on / off |
-| `geek_weather_loc` | JSON object | Cached coordinates: `{"lat":39.9,"lon":116.4,"ts":1700000000000}` |
+| `geek_weather_loc` | JSON object | Cached coordinates + city: `{"lat":39.9,"lon":116.4,"city":"北京市","ts":1700000000000}` |
+| `geek_note_left` | String | Plain text of the left note panel |
+| `geek_note_right` | String | Plain text of the right note panel |
+| `geek_note_left_collapsed` | `"1"` / `"0"` | Left note folded / expanded |
+| `geek_note_right_collapsed` | `"1"` / `"0"` | Right note folded / expanded |
 
 Booleans are stored as the strings `"1"` (on) and `"0"` (off). When a key is
 missing the built-in default applies — engine `0`, both toggles on.
